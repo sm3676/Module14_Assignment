@@ -11,3 +11,30 @@ Base.metadata.create_all(bind=engine)
 # include routes
 app.include_router(user.router)
 app.include_router(calculation.router)
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# ROOT
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to FastAPI App"}
+
+from app.routes import math
+
+app.include_router(math.router)
+
+from fastapi import FastAPI
+from app.routes import user, calculation, math
+
+app = FastAPI()
+
+# include ALL routers
+app.include_router(math.router)
+app.include_router(user.router)
+app.include_router(calculation.router)
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to FastAPI App"}
