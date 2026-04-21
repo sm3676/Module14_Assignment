@@ -83,6 +83,10 @@ GET /calculations/{id} → Get one
 PUT /calculations/{id} → Update
 DELETE /calculations/{id} → Delete
 
+pull docker image
+docker pull sm3676/backend-app
+docker run -p 8000:8000 sm3676/backend-app
+
 
 **👩‍💻 Author**
 
