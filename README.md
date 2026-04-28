@@ -1,38 +1,63 @@
-# Backend Assignment (FastAPI + SQLAlchemy)
+# Module 14: BREAD Functionality for Calculations
 
-## 🚀 Overview
-This project is a backend application built using **FastAPI**.  
-It provides:
-- User Registration & Login
-- Calculation CRUD (Create, Read, Update, Delete)
-- SQLite database using SQLAlchemy
-- API documentation via Swagger UI
+## 📌 Project Overview
+This project implements full **BREAD (Browse, Read, Edit, Add, Delete)** functionality for calculations using **FastAPI**, with frontend integration, testing, and CI/CD.
+
+---
+
+## 🚀 Features
+
+### 🔐 Authentication
+- User Registration
+- User Login (JWT आधारित authentication)
+- Secure password hashing
+
+### 🧮 Calculations (BREAD)
+- ➕ Add Calculation
+- 📥 Browse All Calculations
+- 🔍 Read Single Calculation
+- ✏️ Edit Calculation
+- ❌ Delete Calculation
 
 ---
 
 ## 🛠️ Tech Stack
-- FastAPI
-- SQLAlchemy
-- SQLite
+- Python (FastAPI)
+- SQLite / PostgreSQL
 - Pydantic
+- JWT Authentication
+- Playwright (E2E Testing)
 - Pytest
 - Docker
+- GitHub Actions (CI/CD)
 
 ---
 
-## 📁 Project Structure
+## 📂 Project Structure
 
 backend-assignment/
 │
 ├── app/
 │ ├── main.py
-│ ├── db/
-│ ├── models/
-│ ├── schemas/
-│ ├── routes/
-│ └── auth/
+│ ├── models.py
+│ ├── database.py
+│ ├── Auth.py
+│ └── routes/
+│ ├── user.py
+│ └── calculation.py
+│
+├── module13-fastapi-jwt/
+│ └── Frontend/
+│ ├── index.html
+│ ├── login.html
+│ ├── register.html
+│ └── script.js
 │
 ├── tests/
+│ ├── test_users.py
+│ ├── test_calculations.py
+│ └── test_e2e.py
+│
 ├── requirements.txt
 ├── Dockerfile
 └── README.md
@@ -40,71 +65,48 @@ backend-assignment/
 
 ---
 
-## ⚙️ Installation & Run (Local)
+## ▶️ How to Run Locally
 
-### 1. Install dependencies
+### 1️⃣ Install dependencies
 ```bash
 pip install -r requirements.txt
 
-**### 2. Run The Server**
+2️⃣ Run FastAPI server
 
 uvicorn app.main:app --reload
 
-**### 3. open AI docs**
+Open in browser:
 
-http://localhost:8000/docs
+http://127.0.0.1:8000/docs
 
-
-**🐳 Run with Docker
-1. Build Docker image**
-
-docker build -t backend-app .
-**
-2. Run container**
-
-docker run -p 8000:8000 backend-app
-
-**3. Access API**
-
-http://localhost:8000/docs
-
-**🧪 Running Tests**
+🧪 Run Tests
 
 pytest
 
-**📌 API Endpoints**
-Users
-POST /users/register → Register user
-POST /users/login → Login user
-Calculations
-GET /calculations/ → Get all calculations
-POST /calculations/ → Create calculation
-GET /calculations/{id} → Get one
-PUT /calculations/{id} → Update
-DELETE /calculations/{id} → Delete
+🌐 Frontend Usage
 
-pull docker image
-docker pull sm3676/backend-app
-docker run -p 8000:8000 sm3676/backend-app
+Open:
+
+register.html → Register user
+login.html → Login & get token
+index.html → Perform calculations
 
 
-**👩‍💻 Author**
+🐳 Docker
 
-Sharvani Rao
+Build image
 
+docker build -t module14-bread-calculations .
 
+Run container
 
+docker run -p 8000:8000 module14-bread-calculations
 
+⚙️ GitHub Actions (CI/CD)
 
-
-
-
-
-
-
-
-
-
+Automatically runs tests on push
+Builds project
+Ensures everything works before submission
 
 
 
