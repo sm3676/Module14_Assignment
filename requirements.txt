@@ -44,3 +44,5 @@ python-jose[cryptography]
 passlib[bcrypt]
 pytest
 httpx
+pytest-playwright
+playwright
