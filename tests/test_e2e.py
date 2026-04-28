@@ -5,7 +5,7 @@ BASE_PATH = "file://" + os.path.abspath("module13-fastapi-jwt/Frontend/") + "/"
 
 
 def test_register(page):
-    page.goto(BASE_PATH + "Register.html")
+    page.goto(BASE_PATH + "register.html")
 
     page.fill("#email", "test@test.com")
     page.fill("#password", "123456")
@@ -18,7 +18,7 @@ def test_register(page):
 
 
 def test_login(page):
-    page.goto(BASE_PATH + "Login.html")
+    page.goto(BASE_PATH + "login.html")
 
     page.fill("#email", "test@test.com")
     page.fill("#password", "123456")
