@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+</head>
+<body>
+
+<h2>Calculator</h2>
+
+<!-- TOKEN -->
+<input type="text" id="token" placeholder="Token"><br><br>
+
+<!-- OPERANDS -->
+<input type="number" id="op1" placeholder="Operand 1"><br><br>
+<input type="number" id="op2" placeholder="Operand 2"><br><br>
+
+<!-- OPERATION -->
+ <select id="operation">
+  <option value="+">+</option>
+  <option value="-">-</option>
+  <option value="*">*</option>
+  <option value="/">/</option>
+</select>
+<br><br>
+
+<!-- BUTTONS -->
+<button id="addBtn">Add</button>
+<button id="loadBtn">Load</button>
+
+<h3>Results</h3>
+<div id="result"></div>
+
+<script>
+const API = "http://127.0.0.1:8000/calculations/";
+
+// ➕ ADD
+document.getElementById("addBtn").onclick = async () => {
+    const token = document.getElementById("token").value;
+
+    const res = await fetch(API, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({
+            operand1: Number(document.getElementById("op1").value),
+            operand2: Number(document.getElementById("op2").value),
+            operation: document.getElementById("operation").value
+        })
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.result;
+};
+
+// 📄 LOAD
+document.getElementById("loadBtn").onclick = async () => {
+    const token = document.getElementById("token").value;
+
+    const res = await fetch(API, {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    const data = await res.json();
+
+    const container = document.getElementById("result");
+    container.innerHTML = "";
+
+    data.forEach(calc => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            ${calc.operand1} ${calc.operation} ${calc.operand2} = ${calc.result}
+            <button onclick="deleteCalc(${calc.id})">Delete</button>
+        `;
+
+        container.appendChild(div);
+    });
+};
+
+// ❌ DELETE
+async function deleteCalc(id) {
+    const token = document.getElementById("token").value;
+
+    await fetch(API + id, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    // reload after delete
+    document.getElementById("loadBtn").click();
+}
+</script>
+<script src="script.js"></script>
+
+
+</body>
+</html>

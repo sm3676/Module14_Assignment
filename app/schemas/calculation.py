@@ -1,6 +1,18 @@
+from pydantic import BaseModel, ConfigDict
 
-from pydantic import BaseModel
-
+# 👉 request body (POST)
 class CalculationCreate(BaseModel):
-    expression: str
-    result: str
+    operand1: float
+    operand2: float
+    operation: str
+
+
+# 👉 response model
+class CalculationResponse(BaseModel):
+    id: int
+    operand1: float
+    operand2: float
+    operation: str
+    result: float
+
+    model_config = ConfigDict(from_attributes=True)

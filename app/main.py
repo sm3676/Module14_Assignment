@@ -1,40 +1,29 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.db.database import Base, engine
-from app.routes import user, calculation
-from app.models import user as user_model, calculation as calc_model
+from app.routes import user, calculation   # ✅ math removed
 
 app = FastAPI()
 
-# create tables
+# ✅ CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ✅ Create tables
 Base.metadata.create_all(bind=engine)
 
-# include routes
+# ✅ Routers
 app.include_router(user.router)
 app.include_router(calculation.router)
+# ❌ REMOVE math.router
 
-from fastapi import FastAPI
-
-app = FastAPI()
-
-# ROOT
+# ✅ Root
 @app.get("/")
-def read_root():
-    return {"message": "Welcome to FastAPI App"}
-
-from app.routes import math
-
-app.include_router(math.router)
-
-from fastapi import FastAPI
-from app.routes import user, calculation, math
-
-app = FastAPI()
-
-# include ALL routers
-app.include_router(math.router)
-app.include_router(user.router)
-app.include_router(calculation.router)
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to FastAPI App"}
+def root():
+    return {"message": "THIS IS MY APP"}

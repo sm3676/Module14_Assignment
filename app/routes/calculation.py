@@ -1,54 +1,116 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app.db.database import get_db
 from app.models.calculation import Calculation
-from app.schemas.calculation import CalculationCreate
+from app.schemas.calculation import CalculationCreate, CalculationResponse
+from app.routes.user import get_current_user
+from app.routes.math import calculate   # ✅ reusable logic
 
-router = APIRouter(prefix="/calculations", tags=["Calculations"])
+router = APIRouter(tags=["Calculations"])
 
 
-@router.post("/")
-def create(calc: CalculationCreate, db: Session = Depends(get_db)):
+# ✅ ADD (POST)
+@router.post("/calculations", response_model=CalculationResponse)
+def create_calculation(
+    calc: CalculationCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    try:
+        result = calculate(calc.operation, calc.operand1, calc.operand2)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     new_calc = Calculation(
-        expression=calc.expression,
-        result=calc.result
+        operand1=calc.operand1,
+        operand2=calc.operand2,
+        operation=calc.operation,
+        result=result,
+        user_id=user.id
     )
+
     db.add(new_calc)
     db.commit()
     db.refresh(new_calc)
+
     return new_calc
 
-@router.get("/")
-def get_all(db: Session = Depends(get_db)):
-    return db.query(Calculation).all()
 
-@router.get("/{id}")
-def get_one(id: int, db: Session = Depends(get_db)):
-    calc = db.get(Calculation, id)
+# ✅ BROWSE (GET ALL)
+@router.get("/calculations", response_model=list[CalculationResponse])
+def get_calculations(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    return db.query(Calculation).filter(Calculation.user_id == user.id).all()
+
+
+# ✅ READ (GET BY ID)
+@router.get("/calculations/{id}", response_model=CalculationResponse)
+def get_calculation(
+    id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    calc = db.query(Calculation).filter(
+        Calculation.id == id,
+        Calculation.user_id == user.id
+    ).first()
+
     if not calc:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Calculation not found")
+
     return calc
 
 
+# ✅ EDIT (PUT)
+@router.put("/calculations/{id}", response_model=CalculationResponse)
+def update_calculation(
+    id: int,
+    updated: CalculationCreate,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    calc = db.query(Calculation).filter(
+        Calculation.id == id,
+        Calculation.user_id == user.id
+    ).first()
 
-@router.put("/{id}")
-def update(id: int, updated: CalculationCreate, db: Session = Depends(get_db)):
-    calc = db.get(Calculation, id)
     if not calc:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Calculation not found")
 
-    for key, value in updated.model_dump().items():
-        setattr(calc, key, value)
+    try:
+        calc.result = calculate(updated.operation, updated.operand1, updated.operand2)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    calc.operation = updated.operation
+    calc.operand1 = updated.operand1
+    calc.operand2 = updated.operand2
 
     db.commit()
+    db.refresh(calc)
+
     return calc
 
-@router.delete("/{id}")
-def delete(id: int, db: Session = Depends(get_db)):
-    calc = db.get(Calculation, id)
+
+# ✅ DELETE
+@router.delete("/calculations/{id}")
+def delete_calculation(
+    id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    calc = db.query(Calculation).filter(
+        Calculation.id == id,
+        Calculation.user_id == user.id
+    ).first()
+
     if not calc:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Calculation not found")
 
     db.delete(calc)
     db.commit()
-    return {"message": "Deleted"}
+
+    return {"message": "Deleted successfully"}

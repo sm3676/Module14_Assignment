@@ -6,19 +6,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: password
-        ports:
-          - 5432:5432
-
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
 
-      - name: Run tests
-        run: pytest
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install playwright pytest-playwright
+        playwright install
+
+    - name: Run tests
+      run: pytest
