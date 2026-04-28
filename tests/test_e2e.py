@@ -1,6 +1,7 @@
 import time
+import os
 
-BASE_PATH = "file:///C:/Users/Sharvani/OneDrive/Desktop/backend-assignment/module13-fastapi-jwt/frontend/"
+BASE_PATH = "file://" + os.path.abspath("module13-fastapi-jwt/Frontend/") + "/"
 
 
 def test_register(page):
